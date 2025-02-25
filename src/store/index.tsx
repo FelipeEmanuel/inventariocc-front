@@ -12,7 +12,9 @@ const store = configureStore({
     reducer: {
         produtos
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false, seriazableCheck: false }).concat(sagaMiddleware),
+    middleware: (getDefaultMiddleware) => {
+        return getDefaultMiddleware({serializableCheck: false}).concat(sagaMiddleware)
+    },
 })
 
 sagaMiddleware.run(rootSaga)

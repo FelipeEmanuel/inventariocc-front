@@ -6,11 +6,12 @@ import { ApplicationState, AsyncStateStatus, IPaginator } from '../../store/root
 import { produtosActions } from '../../store/produtos'
 import { connect } from 'react-redux'
 import { Produtos } from '../../application/domain/models/entity/produtos'
-import { IActionProdutoRequest } from '../../store/produtos/types'
+import { IActionCreateSuccess, IActionProduto, IActionProdutoRequest, IActionUpdateSuccess } from '../../store/produtos/types'
 import { StripedDataGrid, styledDataGrid } from '../../application/domain/utils/styles.util'
 import { CustomNoRowsOverlay, CustomPagination } from '../../application/domain/utils/functions.util'
 import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import { CurrencyMasked } from '../../components/masks/currency'
+import AddProdutoDialog from '../../components/dialogs/addProdutoDialog'
 
 const LayoutStyle = (theme: Theme) => createStyles({
     root: {
@@ -32,6 +33,14 @@ interface IDispatch {
     produtosReset(): void
 
     produtosRequest(data: IActionProdutoRequest): void
+
+    createReset(): void
+
+    createRequest(data: IActionCreateSuccess): void
+
+    updateReset(): void
+
+    updateRequest(data: IActionUpdateSuccess): void
 }
 
 interface IState {
@@ -52,7 +61,14 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
             selectedRow: null,
             filtersOpen: false
         }
+
+        this.handleOpen = this.handleOpen.bind(this)
+        this.handleClose = this.handleClose.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
+
+    private handleOpen = (row: Produtos) => this.setState({ open: true, selectedRow: new Produtos().fromJSON(row)})
+    private handleClose = () => this.setState({ open: false, selectedRow: null })
 
     public componentDidMount() {
         const { produtosRequest, paginator } = this.props
@@ -63,7 +79,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
     public render() {
 
         const { classes, data, paginator, produtosRequest } = this.props
-        const { filtersOpen } = this.state
+        const { filtersOpen, open, selectedRow } = this.state
 
         const columns: GridColDef[] = [
             {
@@ -121,6 +137,9 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         ]
 
         const rows = data.map((produto: Produtos) => produto.toJSON())
+        
+        console.log(data)
+        console.log(rows)
 
         return <React.Fragment>
             <Box className={classes.root}>
@@ -156,7 +175,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                             variant="contained"
                             sx={{ width: 218, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
                             color='error'
-                            //onClick={() => this.handleOpen(new Creditor(), false)}
+                            onClick={() => this.handleOpen(new Produtos())}
                             >
                             ADICIONAR
                         </Button>
@@ -192,7 +211,30 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                 </Box>
             </Box>
 
+            <AddProdutoDialog 
+                open={open}
+                selectedRow={selectedRow}
+                onClose={this.handleClose}
+                handleSubmit={this.handleSubmit}
+            />
+
         </React.Fragment>
+
+    }
+
+    private handleSubmit(data: IActionProduto): void {
+        const { createRequest, updateRequest } = this.props
+        const { selectedRow } = this.state
+        const price: number = parseFloat(`${data?.price}`.replace(/[,]/, '.'))
+        const produto: Produtos = new Produtos().fromJSON({ ...data, price })
+        if (selectedRow && selectedRow.id) {
+            produto.id = selectedRow.id
+            updateRequest({ data: produto })
+        } else {
+            createRequest({ data: produto })
+        }
+
+        this.handleClose()
 
     }
 }

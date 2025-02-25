@@ -48,6 +48,22 @@ export class ProdutosService {
             })
     }
 
+    public async create(item: Produtos): Promise<Produtos> {
+        return await axiosInstance
+            .post(`${this.apiVersion}/produtos`, item.toJSON())
+            .then((response: AxiosResponse<any>) =>
+                new Produtos().fromJSON(response.data)
+            )
+    }
+
+    public async update(item: Produtos): Promise<Produtos> {
+        return await axiosInstance
+            .patch(`${this.apiVersion}/produtos/${item.id}`, item.toJSON())
+            .then((response: AxiosResponse<any>) =>
+                new Produtos().fromJSON(response.data)
+            )
+    }
+
 }
 
 const produtosService: ProdutosService = new ProdutosService()
