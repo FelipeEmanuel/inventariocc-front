@@ -12,6 +12,7 @@ import { CustomNoRowsOverlay, CustomPagination } from '../../application/domain/
 import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import { CurrencyMasked } from '../../components/masks/currency'
 import AddProdutoDialog from '../../components/dialogs/addProdutoDialog'
+import ProdutoFilters from '../../components/filters/produtos'
 
 const LayoutStyle = (theme: Theme) => createStyles({
     root: {
@@ -65,10 +66,18 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         this.handleOpen = this.handleOpen.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.toggleFilters = this.toggleFilters.bind(this)
     }
 
     private handleOpen = (row: Produtos) => this.setState({ open: true, selectedRow: new Produtos().fromJSON(row)})
     private handleClose = () => this.setState({ open: false, selectedRow: null })
+
+    private toggleFilters() {
+        this.setState((prevState) => ({
+            filtersOpen: !prevState.filtersOpen,
+
+        }));
+    }
 
     public componentDidMount() {
         const { produtosRequest, paginator } = this.props
@@ -137,9 +146,6 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         ]
 
         const rows = data.map((produto: Produtos) => produto.toJSON())
-        
-        console.log(data)
-        console.log(rows)
 
         return <React.Fragment>
             <Box className={classes.root}>
@@ -151,7 +157,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                                 id="btn_enter"
                                 type="submit"
                                 variant="outlined"
-                                //onClick={this.toggleFilters}
+                                onClick={this.toggleFilters}
                                 sx={{ width: 218, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
                                 color="error"
                                 >
@@ -159,13 +165,13 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                             </Button>
                         )}
                         {filtersOpen && (
-                            <h1>Em breve</h1>
-                            /*<CredoresFilters 
+                            
+                            <ProdutoFilters 
                                 toggle={this.toggleFilters} 
-                                onClick={(filters: any) => creditorsRequest({ paginator: { ...paginator, search: filters } })}
-                                creditorsRequest={creditorsRequest}
+                                //onClick={(filters: any) => creditorsRequest({ paginator: { ...paginator, search: filters } })}
+                                //creditorsRequest={produRequest}
                                 paginator={paginator} 
-                            />*/
+                            />
                         )}
                     </Box>
                     
@@ -185,7 +191,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                     <StripedDataGrid
                         rows={rows}
                         rowHeight={37}
-                        //onRowClick={(params) => this.handleOpen(params.row, true)}
+                        onRowClick={(params) => this.handleOpen(params.row)}
                         sx={styledDataGrid}
                         columns={columns}
                         columnHeaderHeight={40}

@@ -119,7 +119,6 @@ class AddProdutoDialog extends Component<IProps> {
                                                             onBlur={() => setFieldTouched('type', true, true)}>
                                                             {Object.keys(ProductType).map((value: string) => {
                                                                 return <MenuItem value={value} key={value}>{value}</MenuItem>
-
                                                             })}
                                                         </CssSelect>
                                                         <FormErrorMessage name='type'></FormErrorMessage>
@@ -164,33 +163,32 @@ class AddProdutoDialog extends Component<IProps> {
                                             )}
                                         </Field>
                                     </Box>
-                                    {!selectedRow?.id &&
-                                        <Box display="flex" flexDirection="row" justifyContent="flex-end" gap="10px" padding="40px 0px 10px" width="100%" margin="0 auto"> 
-                                            <FormControl>
-                                                <Button
-                                                    id="btn_enter"
-                                                    variant="outlined"
-                                                    sx={{ width: 128, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px', backgroundColor: "white", color: "#d32f2f", borderColor: "#d32f2f" }}
-                                                    onClick={onClose}
-                                                    type="button"
-                                                >
-                                                    CANCELAR
-                                                </Button>
-                                            </FormControl>
-                                            <FormControl>
-                                                <Button
-                                                    id="btn_enter"
-                                                    variant="contained"
-                                                    sx={{ width: 128, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
-                                                    color="error"
-                                                    onClick={() => handleSubmit(values)}
-                                                    disabled={!isValid}
-                                                >
-                                                    SALVAR
-                                                </Button>
-                                            </FormControl>
-                                        </Box>
-                                    }
+                                    <Box display="flex" flexDirection="row" justifyContent="flex-end" gap="10px" padding="40px 0px 10px" width="100%" margin="0 auto"> 
+                                        <FormControl>
+                                            <Button
+                                                id="btn_enter"
+                                                variant="outlined"
+                                                sx={{ width: 128, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px', backgroundColor: "white", color: "#d32f2f", borderColor: "#d32f2f" }}
+                                                onClick={onClose}
+                                                type="button"
+                                            >
+                                                CANCELAR
+                                            </Button>
+                                        </FormControl>
+                                        <FormControl>
+                                            <Button
+                                                id="btn_enter"
+                                                variant="contained"
+                                                sx={{ width: 128, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
+                                                color="error"
+                                                onClick={() => handleSubmit(values)}
+                                                disabled={!isValid}
+                                            >
+                                                {selectedRow?.id ? "EDITAR": "SALVAR"}
+                                            </Button>
+                                        </FormControl>
+                                    </Box>
+                                    
                                 </Form>
                             )}
                         </Formik>

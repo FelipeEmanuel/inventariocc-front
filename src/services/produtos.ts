@@ -58,7 +58,7 @@ export class ProdutosService {
 
     public async update(item: Produtos): Promise<Produtos> {
         return await axiosInstance
-            .patch(`${this.apiVersion}/produtos/${item.id}`, item.toJSON())
+            .put(`${this.apiVersion}/produtos/${item.id}`, item.toJSON())
             .then((response: AxiosResponse<any>) =>
                 new Produtos().fromJSON(response.data)
             )
