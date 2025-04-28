@@ -13,6 +13,7 @@ import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import { CurrencyMasked } from '../../components/masks/currency'
 import AddProdutoDialog from '../../components/dialogs/addProdutoDialog'
 import ProdutoFilters from '../../components/filters/produtos'
+import { t } from 'i18next'
 
 const LayoutStyle = (theme: Theme) => createStyles({
     root: {
@@ -106,6 +107,21 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                 headerAlign: 'center',
                 align: 'center',
                 sortable: true,
+                renderCell: (params: GridCellParams) => {
+                    if (params?.row?.qtd) {
+                        return (
+                            <Typography>
+                                {params?.row?.qtd}
+                            </Typography>
+                        )
+                    } else {
+                        return (
+                            <Typography>
+                                0
+                            </Typography>
+                        )
+                    }
+                }
             },
             {
                 field: 'price',
@@ -142,6 +158,11 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                 headerAlign: 'center',
                 align: 'center',
                 sortable: true,
+                renderCell: (params: GridCellParams) => {
+                    if (params?.row?.type) {
+                        return t(`MATERIAL_TYPE.${params?.row?.type?.toUpperCase()}`)
+                    }
+                }
             },
         ]
 
@@ -200,7 +221,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                         paginationMode="server"
                         onPaginationModelChange={(page: any) => produtosRequest({ paginator: { ...page, search: [...paginator.search] } })}
                         disableColumnMenu={true}
-                        pageSizeOptions={[1, 5, 10, 50]}
+                        pageSizeOptions={[1, 10, 20, 50]}
                         getRowClassName={(params) =>
                             params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                         }
@@ -231,10 +252,13 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
     private handleSubmit(data: IActionProduto): void {
         const { createRequest, updateRequest } = this.props
         const { selectedRow } = this.state
+        !data.price ? data.price === 0 : data.price
+        !data.qtd ? data.qtd === 0 : data.qtd
         const price: number = parseFloat(`${data?.price}`.replace(/[,]/, '.'))
         const produto: Produtos = new Produtos().fromJSON({ ...data, price })
         if (selectedRow && selectedRow.id) {
             produto.id = selectedRow.id
+            console.log(produto)
             updateRequest({ data: produto })
         } else {
             createRequest({ data: produto })

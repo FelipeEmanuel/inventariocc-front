@@ -57,6 +57,7 @@ export class ProdutosService {
     }
 
     public async update(item: Produtos): Promise<Produtos> {
+        console.log(item.toJSON())
         return await axiosInstance
             .put(`${this.apiVersion}/produtos/${item.id}`, item.toJSON())
             .then((response: AxiosResponse<any>) =>

@@ -87,10 +87,10 @@ export class Produtos extends Entity {
             id: this.id || undefined,
             created_at: this.created_at || undefined,
             updated_at: this.updated_at || undefined,
-            name: this.name || undefined,
-            qtd: this.qtd || undefined,
-            price: this.price || undefined,
-            type: this.type || undefined,
+            name: this.name ? this.name : undefined,
+            qtd: this.qtd ? this.qtd : 0,
+            price: this.price ? this.price : 0,
+            type: this.type ? this.type : undefined,
         }
     }
 }

@@ -11,7 +11,7 @@ const initialState: ProdutosState = {
         data: [],
         paginator: {
             page: 0,
-            pageSize: 50,
+            pageSize: 20,
             rowCount: 0,
             search: [{
                 key: '',

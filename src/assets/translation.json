@@ -1,0 +1,7 @@
+{
+    "MATERIAL_TYPE": {
+        "HIDRAULIC": "Hidráulico",
+        "ELETRIC": "Elétrico",
+        "OTHERS": "Diversos"
+    }
+}

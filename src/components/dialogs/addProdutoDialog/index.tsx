@@ -7,6 +7,7 @@ import { CssInputLabel, CssSelect, CssTextField, Dialog } from "../../../applica
 import { ProductType } from "../../../application/domain/utils/material.type";
 import FormErrorMessage from "../../form.error";
 import TextFieldCurrency from "../../textfield.currency";
+import { t } from "i18next";
 
 interface IProps {  
     open: boolean
@@ -118,7 +119,7 @@ class AddProdutoDialog extends Component<IProps> {
                                                                 setFieldValue('type', e.target.value)}
                                                             onBlur={() => setFieldTouched('type', true, true)}>
                                                             {Object.keys(ProductType).map((value: string) => {
-                                                                return <MenuItem value={value} key={value}>{value}</MenuItem>
+                                                                return <MenuItem value={value} key={value}>{t(`MATERIAL_TYPE.${value.toUpperCase()}`)}</MenuItem>
                                                             })}
                                                         </CssSelect>
                                                         <FormErrorMessage name='type'></FormErrorMessage>
@@ -135,7 +136,7 @@ class AddProdutoDialog extends Component<IProps> {
                                                             id="qtd"
                                                             variant='standard'
                                                             label="Quantidade"
-                                                            value={values?.qtd || ''}
+                                                            value={values?.qtd || 0}
                                                             onChange={(e: any) => { setFieldValue('qtd', e.target.value) }}
                                                             onBlur={() => setFieldTouched('qtd', true, true)}
                                                         />

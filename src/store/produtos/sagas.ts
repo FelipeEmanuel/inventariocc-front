@@ -67,7 +67,7 @@ export function* update(action: IActionType<IActionUpdateSuccess>) {
     //const { openSnackBar } = SnackbarActions
     try {
         const { data } = action.payload
-
+        console.log(action.payload)
         const response: Produtos = yield apply(
             produtosService,
             produtosService.update,
