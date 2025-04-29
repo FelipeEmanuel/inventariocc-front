@@ -81,9 +81,11 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
     }
 
     public componentDidMount() {
-        const { produtosRequest, paginator } = this.props
+        const { produtosRequest, paginator, status } = this.props
         document.title = `PRODUTOS`
         produtosRequest({ paginator: paginator as any})
+        console.log('chamou')
+        console.log(status)
     }
 
     public render() {
