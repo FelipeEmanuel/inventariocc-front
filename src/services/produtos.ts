@@ -65,6 +65,11 @@ export class ProdutosService {
             )
     }
 
+    public remove(parecerId: string): Promise<void> {
+        return axiosInstance
+            .delete(`${this.apiVersion}/produtos/${parecerId}`)
+    }
+
 }
 
 const produtosService: ProdutosService = new ProdutosService()

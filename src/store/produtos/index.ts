@@ -1,9 +1,8 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AsyncStateStatus } from "../root.types";
-import { IActionCreateSuccess, IActionProdutoRequest, IActionProdutoSuccess, IActionUpdateSuccess, ProdutosState } from "./types";
+import { IActionCreateSuccess, IActionProdutoRequest, IActionProdutoSuccess, IActionRemoveSuccess, IActionUpdateSuccess, ProdutosState } from "./types";
 import { Produtos } from "../../application/domain/models/entity/produtos";
-
 
 const initialState: ProdutosState = {
     list: {
@@ -86,6 +85,17 @@ export const produtosSlice = createSlice({
         updateFailure: (state: ProdutosState) => {
             state.update.status = AsyncStateStatus.FAILURE
         },
+
+        removeRequest: (state: ProdutosState) => {
+            state.remove.status = AsyncStateStatus.LOADING
+        },
+        removeSuccess: (state: ProdutosState, action: PayloadAction<IActionRemoveSuccess>) => {
+            state.remove.status = AsyncStateStatus.SUCCESS
+            state.list.data = state.list.data.filter(produto => produto.id !== action.payload.id);
+        },
+        removeFailure: (state: ProdutosState) => {
+            state.remove.status = AsyncStateStatus.FAILURE
+        }
     }
 })
 

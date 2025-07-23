@@ -6,14 +6,16 @@ import { ApplicationState, AsyncStateStatus, IPaginator } from '../../store/root
 import { produtosActions } from '../../store/produtos'
 import { connect } from 'react-redux'
 import { Produtos } from '../../application/domain/models/entity/produtos'
-import { IActionCreateSuccess, IActionProduto, IActionProdutoRequest, IActionUpdateSuccess } from '../../store/produtos/types'
+import { IActionCreateSuccess, IActionProduto, IActionProdutoRequest, IActionRemoveRequest, IActionUpdateSuccess } from '../../store/produtos/types'
 import { StripedDataGrid, styledDataGrid } from '../../application/domain/utils/styles.util'
 import { CustomNoRowsOverlay, CustomPagination } from '../../application/domain/utils/functions.util'
-import { GridCellParams, GridColDef } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridCellParams, GridColDef, GridRowParams } from '@mui/x-data-grid'
 import { CurrencyMasked } from '../../components/masks/currency'
 import AddProdutoDialog from '../../components/dialogs/addProdutoDialog'
 import ProdutoFilters from '../../components/filters/produtos'
 import { t } from 'i18next'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteDialog from '../../components/dialogs/deleteDialog'
 
 const LayoutStyle = (theme: Theme) => createStyles({
     root: {
@@ -43,12 +45,15 @@ interface IDispatch {
     updateReset(): void
 
     updateRequest(data: IActionUpdateSuccess): void
+
+    removeRequest(data: IActionRemoveRequest): void
 }
 
 interface IState {
     readonly open: boolean
     readonly selectedRow: Produtos | null
     readonly filtersOpen: boolean
+    readonly openModalDelete: boolean
 }
 
 type IJoinProps = IProps & IDispatch & WithStyles<typeof LayoutStyle, true>
@@ -61,7 +66,8 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         this.state = {
             open: false,
             selectedRow: null,
-            filtersOpen: false
+            filtersOpen: false,
+            openModalDelete: false
         }
 
         this.handleOpen = this.handleOpen.bind(this)
@@ -72,26 +78,24 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
 
     private handleOpen = (row: Produtos) => this.setState({ open: true, selectedRow: new Produtos().fromJSON(row)})
     private handleClose = () => this.setState({ open: false, selectedRow: null })
+    private handleModalDelete = (row: Produtos) => this.setState({ openModalDelete: true, selectedRow: new Produtos().fromJSON(row) })
 
     private toggleFilters() {
         this.setState((prevState) => ({
             filtersOpen: !prevState.filtersOpen,
-
         }));
     }
 
     public componentDidMount() {
-        const { produtosRequest, paginator, status } = this.props
-        document.title = `PRODUTOS`
+        const { produtosRequest, paginator } = this.props
+        document.title = `INVENTÁRIO CASA CLÁUDIO`
         produtosRequest({ paginator: paginator as any})
-        console.log('chamou')
-        console.log(status)
     }
 
     public render() {
 
         const { classes, data, paginator, produtosRequest } = this.props
-        const { filtersOpen, open, selectedRow } = this.state
+        const { filtersOpen, open, selectedRow, openModalDelete } = this.state
 
         const columns: GridColDef[] = [
             {
@@ -166,6 +170,28 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                     }
                 }
             },
+            {
+                field: 'acoes',
+                headerName: 'Ações',
+                flex: 0.2,
+                headerAlign: 'center',
+                align: 'center',
+                type: 'actions',
+
+                getActions: (params: GridRowParams) => [
+                    <GridActionsCellItem
+                        icon={
+                            <Tooltip title="Excluir o Produto" placement="top">
+                                <DeleteIcon sx={{ color: 'black' }} />
+                            </Tooltip>
+                        }
+                        label="Excluir o Produto"
+                        onClick={() => {
+                            this.handleModalDelete(params?.row)
+                        }}
+                    />,
+                ]
+            }
         ]
 
         const rows = data.map((produto: Produtos) => produto.toJSON())
@@ -191,8 +217,8 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                             
                             <ProdutoFilters 
                                 toggle={this.toggleFilters} 
-                                //onClick={(filters: any) => creditorsRequest({ paginator: { ...paginator, search: filters } })}
-                                //creditorsRequest={produRequest}
+                                onClick={(filters: any) => produtosRequest({ paginator: { ...paginator, search: filters } })}
+                                produtosRequest={produtosRequest}
                                 paginator={paginator} 
                             />
                         )}
@@ -247,6 +273,15 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                 handleSubmit={this.handleSubmit}
             />
 
+            <DeleteDialog
+                open={openModalDelete}
+                not={() => this.setState({ openModalDelete: false, selectedRow: null})}
+                yes={() => {
+                    this.handleDelete(selectedRow)
+                    this.setState({openModalDelete: false, selectedRow: null})
+                }}
+            />
+
         </React.Fragment>
 
     }
@@ -268,6 +303,16 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
 
         this.handleClose()
 
+    }
+
+    private handleDelete(data: any): void {
+        const { selectedRow } = this.state
+        const { removeRequest } = this.props
+        const produto: Produtos = new Produtos().fromJSON(data)
+        if(selectedRow && selectedRow.id) {
+            produto.id = selectedRow?.id
+            removeRequest({id: produto.id})
+        } 
     }
 }
 

@@ -16,6 +16,10 @@ export enum ProdutosTypes {
     UPDATE_REQUEST = '@produtos/updateRequest',
     UPDATE_SUCCESS = '@produtos/updateSuccess',
     UPDATE_FAILURE = '@produtos/updateFailure',
+
+    REMOVE_REQUEST = '@produtos/removeRequest',
+    REMOVE_SUCCESS = '@produtos/removeSuccess',
+    REMOVE_FAILURE = '@produtos/removeFailure',
 }
 
 export interface IActionProduto {
@@ -32,6 +36,10 @@ export interface IActionProdutoSuccess {
 
 export interface IActionProdutoRequest {
     paginator: IPaginator
+}
+
+export interface IActionRemoveRequest {
+    id: string
 }
 
 export interface IActionCreateSuccess {
