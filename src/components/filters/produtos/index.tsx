@@ -81,8 +81,7 @@ export default function ProdutoFilters(props: any) {
                                         }
                                     })
                                 }}
-                                size="26px"
-                                sx={{color:'#d32f2f'}}
+                                sx={{color:'#d32f2f', size:"26px"}}
                             />
                         </Button>
                     </Tooltip>

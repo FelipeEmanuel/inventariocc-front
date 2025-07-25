@@ -11,7 +11,7 @@ export default function DeleteDialog(this: any, props: any) {
         <React.Fragment>
             <Dialog
                 open={open}
-                onClose={(event, reason) => {
+                onClose={(_event, reason) => {
                     if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
                       return;
                     }
