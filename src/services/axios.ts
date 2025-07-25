@@ -15,7 +15,7 @@ class Axios {
     public static getInstance(): AxiosInstance {
         if (!this._instance) {
             this._instance = axios.create({
-                baseURL: 'http://localhost:8000',
+                baseURL: import.meta.env.VITE_REACT_APP_API_GATEWAY,
             })
         }
         return this._instance
