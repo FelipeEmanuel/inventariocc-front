@@ -106,7 +106,6 @@ export const produtosSlice = createSlice({
             state.stats.status = AsyncStateStatus.LOADING
         },
         produtosStatsSuccess: (state: ProdutosState, action: PayloadAction<IActionStatsSuccess>) => {
-            console.log(action.payload)
             state.stats.status = AsyncStateStatus.SUCCESS
             state.stats.data = action.payload.data
         },

@@ -31,7 +31,7 @@ export function* getStats() {
 }
 
 export function* create(action: IActionType<IActionCreateSuccess>) {
-    const { createSuccess, createFailure } = produtosActions
+    const { createSuccess, createFailure, produtosStatsRequest } = produtosActions
 
     try {
         const { data } = action.payload
@@ -41,6 +41,7 @@ export function* create(action: IActionType<IActionCreateSuccess>) {
             [data]
         )
         yield put<any>(createSuccess({ data: response }))
+        yield put<any>(produtosStatsRequest())
     } catch (e: any) {
         yield put(createFailure())
     }
@@ -48,7 +49,7 @@ export function* create(action: IActionType<IActionCreateSuccess>) {
 }
 
 export function* update(action: IActionType<IActionUpdateSuccess>) {
-    const { updateSuccess, updateFailure } = produtosActions
+    const { updateSuccess, updateFailure, produtosStatsRequest } = produtosActions
     try {
         const { data } = action.payload
         console.log(action.payload)
@@ -58,13 +59,14 @@ export function* update(action: IActionType<IActionUpdateSuccess>) {
             [data]
         )
         yield put<any>(updateSuccess({ data: response }))
+        yield put<any>(produtosStatsRequest())
     } catch (e: any) {
         yield put(updateFailure())
     }
 }
 
 export function* remove(action: IActionType<IActionRemoveRequest>) {
-    const { removeSuccess, removeFailure } = produtosActions
+    const { removeSuccess, removeFailure, produtosStatsRequest } = produtosActions
     try {
         const { id } = action.payload
         yield apply(
@@ -73,6 +75,7 @@ export function* remove(action: IActionType<IActionRemoveRequest>) {
             [id]
         )
         yield put<any>(removeSuccess({id}))
+        yield put<any>(produtosStatsRequest())
     } catch (e) {
         yield put(removeFailure())
     }

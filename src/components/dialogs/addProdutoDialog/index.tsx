@@ -8,6 +8,7 @@ import { ProductType } from "../../../application/domain/utils/material.type";
 import FormErrorMessage from "../../form.error";
 import TextFieldCurrency from "../../textfield.currency";
 import { t } from "i18next";
+import { ProdutosValidator } from "../../../application/domain/validators/produtos";
 
 interface IProps {  
     open: boolean
@@ -79,7 +80,7 @@ class AddProdutoDialog extends Component<IProps> {
                                 handleSubmit(values)
                                 resetForm();
                             }}
-                            //validationSchema={CreditorValidator.validationScheme}
+                            validationSchema={ProdutosValidator.validationScheme}
                             validateOnMount={true}
                             enableReinitialize={true}
                         >
@@ -95,6 +96,7 @@ class AddProdutoDialog extends Component<IProps> {
                                                         <CssTextField
                                                             id="name"
                                                             variant='standard'
+                                                            required
                                                             label='Nome do Produto'
                                                             value={values?.name || ''}
                                                             onChange={(e: any) => { setFieldValue('name', e.target.value) }}
