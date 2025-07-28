@@ -16,6 +16,7 @@ import ProdutoFilters from '../../components/filters/produtos'
 import { t } from 'i18next'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DeleteDialog from '../../components/dialogs/deleteDialog'
+import { Stats } from '../../application/domain/models/entity/stats'
 
 const LayoutStyle = (theme: Theme) => createStyles({
     root: {
@@ -31,12 +32,16 @@ interface IProps {
     status: AsyncStateStatus
     data: Produtos[]
     paginator: IPaginator
+    statsStatus: AsyncStateStatus
+    statsData: Stats
 }
 
 interface IDispatch {
     produtosReset(): void
 
     produtosRequest(data: IActionProdutoRequest): void
+
+    produtosStatsRequest(): void
 
     createReset(): void
 
@@ -59,7 +64,7 @@ interface IState {
 type IJoinProps = IProps & IDispatch & WithStyles<typeof LayoutStyle, true>
 
 class ProdutosComponent extends Component<IJoinProps, IState> {
-    
+
     constructor(props: IJoinProps) {
         super(props)
 
@@ -76,7 +81,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         this.toggleFilters = this.toggleFilters.bind(this)
     }
 
-    private handleOpen = (row: Produtos) => this.setState({ open: true, selectedRow: new Produtos().fromJSON(row)})
+    private handleOpen = (row: Produtos) => this.setState({ open: true, selectedRow: new Produtos().fromJSON(row) })
     private handleClose = () => this.setState({ open: false, selectedRow: null })
     private handleModalDelete = (row: Produtos) => this.setState({ openModalDelete: true, selectedRow: new Produtos().fromJSON(row) })
 
@@ -87,14 +92,15 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
     }
 
     public componentDidMount() {
-        const { produtosRequest, paginator } = this.props
+        const { produtosRequest, produtosStatsRequest, paginator } = this.props
         document.title = `INVENTÁRIO CASA CLÁUDIO`
-        produtosRequest({ paginator: paginator as any})
+        produtosRequest({ paginator: paginator as any })
+        produtosStatsRequest()
     }
 
     public render() {
 
-        const { classes, data, paginator, produtosRequest } = this.props
+        const { classes, data, statsData, paginator, produtosRequest } = this.props
         const { filtersOpen, open, selectedRow, openModalDelete } = this.state
 
         const columns: GridColDef[] = [
@@ -131,7 +137,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
             },
             {
                 field: 'price',
-                headerName: 'Preço',
+                headerName: 'Preço Unidade',
                 flex: 1,
                 headerAlign: 'center',
                 align: 'center',
@@ -145,6 +151,34 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                                 </Typography>
                                 <Typography>
                                     {CurrencyMasked({ value: `${params?.row?.price}`.replace(/[.]/, ',') })}
+                                </Typography>
+                            </Box>
+                        )
+                    } else {
+                        return (
+                            <Typography>
+                                - -
+                            </Typography>
+                        )
+                    }
+                }
+            },
+            {
+                field: 'totalPrice',
+                headerName: 'Preço Total',
+                flex: 1,
+                headerAlign: 'center',
+                align: 'center',
+                sortable: true,
+                renderCell: (params: GridCellParams) => {
+                    if (params?.row?.totalPrice) {
+                        return (
+                            <Box display="flex" justifyContent="center" gap="3px" alignItems="center" width="100%">
+                                <Typography>
+                                    R$
+                                </Typography>
+                                <Typography>
+                                    {CurrencyMasked({ value: `${params?.row?.totalPrice}`.replace(/[.]/, ',') })}
                                 </Typography>
                             </Box>
                         )
@@ -196,9 +230,11 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
 
         const rows = data.map((produto: Produtos) => produto.toJSON())
 
+
+        console.log(statsData)
         return <React.Fragment>
             <Box className={classes.root}>
-                <AppBar/>
+                <AppBar />
                 <Box display="flex" flexDirection="row" justifyContent="space-between" width='96%' margin="0 auto" paddingTop="20px" paddingBottom="20px" marginTop='15px' marginBottom='15px'>
                     <Box>
                         {!filtersOpen && (
@@ -209,21 +245,21 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                                 onClick={this.toggleFilters}
                                 sx={{ width: 218, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
                                 color="error"
-                                >
+                            >
                                 FILTROS
                             </Button>
                         )}
                         {filtersOpen && (
-                            
-                            <ProdutoFilters 
-                                toggle={this.toggleFilters} 
+
+                            <ProdutoFilters
+                                toggle={this.toggleFilters}
                                 onClick={(filters: any) => produtosRequest({ paginator: { ...paginator, search: filters } })}
                                 produtosRequest={produtosRequest}
-                                paginator={paginator} 
+                                paginator={paginator}
                             />
                         )}
                     </Box>
-                    
+
                     <Tooltip title="Adicionar um novo credor" placement="top">
                         <Button
                             id="btn_enter"
@@ -231,10 +267,26 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                             sx={{ width: 218, height: 42, fontSize: 15, fontWeight: 700, borderRadius: '14px' }}
                             color='error'
                             onClick={() => this.handleOpen(new Produtos())}
-                            >
+                        >
                             ADICIONAR
                         </Button>
                     </Tooltip>
+                </Box>
+                <Box display="flex" flexDirection="column" width='96%' margin="0 auto" paddingBottom="20px" marginTop='15px' marginBottom='15px'>
+                    <Typography fontSize="20px" fontWeight={700} color="#000">
+                        Quantidade de Produtos Cadastrados: {statsData?.count}
+                    </Typography>
+                    <Typography fontSize="20px" fontWeight={700} color="#000">
+                        Quantidade de Produtos em Estoque: {statsData?.totalQtd}
+                    </Typography>
+                    <Box display="flex" gap="3px" alignItems="center" width="100%">
+                        <Typography fontSize="20px" fontWeight={700} color="#000">
+                            Valor Total dos Produtos: R$
+                        </Typography>
+                        <Typography fontSize="20px" fontWeight={700} color="#000">
+                            {CurrencyMasked({ value: `${statsData?.totalValue}`.replace(/[.]/, ',') })}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Box>
                     <StripedDataGrid
@@ -266,7 +318,7 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
                 </Box>
             </Box>
 
-            <AddProdutoDialog 
+            <AddProdutoDialog
                 open={open}
                 selectedRow={selectedRow}
                 onClose={this.handleClose}
@@ -275,10 +327,10 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
 
             <DeleteDialog
                 open={openModalDelete}
-                not={() => this.setState({ openModalDelete: false, selectedRow: null})}
+                not={() => this.setState({ openModalDelete: false, selectedRow: null })}
                 yes={() => {
                     this.handleDelete(selectedRow)
-                    this.setState({openModalDelete: false, selectedRow: null})
+                    this.setState({ openModalDelete: false, selectedRow: null })
                 }}
             />
 
@@ -309,10 +361,10 @@ class ProdutosComponent extends Component<IJoinProps, IState> {
         const { selectedRow } = this.state
         const { removeRequest } = this.props
         const produto: Produtos = new Produtos().fromJSON(data)
-        if(selectedRow && selectedRow.id) {
+        if (selectedRow && selectedRow.id) {
             produto.id = selectedRow?.id
-            removeRequest({id: produto.id})
-        } 
+            removeRequest({ id: produto.id })
+        }
     }
 }
 
@@ -321,7 +373,9 @@ const ProdutosList: any = withStyles<any>(LayoutStyle, { withTheme: true })(Prod
 const mapStateToProps = (state: ApplicationState) => ({
     status: state.produtos.list.status,
     data: state.produtos.list.data,
-    paginator: state.produtos.list.paginator
+    paginator: state.produtos.list.paginator,
+    statsStatus: state.produtos.stats.status,
+    statsData: state.produtos.stats.data
 })
 
 const mapDispatchToProps = {

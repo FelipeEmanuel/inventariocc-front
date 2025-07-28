@@ -7,6 +7,7 @@ export class Produtos extends Entity {
     private _qtd: number | undefined
     private _price: number | undefined
     private _type: string | undefined
+    private _totalPrice: number | undefined
 
     get name(): string | undefined {
         return this._name
@@ -38,6 +39,14 @@ export class Produtos extends Entity {
 
     set type(value: string | undefined) {
         this._type = value
+    }
+
+    get totalPrice(): number | undefined {
+        return this._totalPrice
+    }
+
+    set totalPrice(value: number | undefined) {
+        this._totalPrice = value
     }
 
     public fromJSON(json: any): Produtos {
@@ -79,6 +88,10 @@ export class Produtos extends Entity {
             this.type = json.type
         }
 
+        if (json.totalPrice !== undefined) {
+            this.totalPrice = Number(json.totalPrice)
+        }
+
         return this
     }
 
@@ -91,6 +104,7 @@ export class Produtos extends Entity {
             qtd: this.qtd ? this.qtd : 0,
             price: this.price ? this.price : 0,
             type: this.type ? this.type : undefined,
+            totalPrice: this.totalPrice ? this.totalPrice : 0,
         }
     }
 }

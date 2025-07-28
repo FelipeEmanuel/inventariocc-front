@@ -1,4 +1,5 @@
 import { Produtos } from '../../application/domain/models/entity/produtos'
+import { Stats } from '../../application/domain/models/entity/stats'
 import { AsyncStateStatus, IPaginator } from '../root.types'
 
 export enum ProdutosTypes {
@@ -20,6 +21,10 @@ export enum ProdutosTypes {
     REMOVE_REQUEST = '@produtos/removeRequest',
     REMOVE_SUCCESS = '@produtos/removeSuccess',
     REMOVE_FAILURE = '@produtos/removeFailure',
+
+    PRODUTOS_STATS_REQUEST = '@produtos/produtosStatsRequest',
+    PRODUTOS_STATS_SUCCESS = '@produtos/produtosStatsSuccess',
+    PRODUTOS_STATS_FAILURE = '@produtos/produtosStatsFailure',
 }
 
 export interface IActionProduto {
@@ -27,6 +32,7 @@ export interface IActionProduto {
     readonly qtd: number
     readonly price: number
     readonly type: string
+    readonly totalPrice: number
 }
 
 export interface IActionProdutoSuccess {
@@ -44,6 +50,10 @@ export interface IActionRemoveRequest {
 
 export interface IActionCreateSuccess {
     data: Produtos
+}
+
+export interface IActionStatsSuccess {
+    data: Stats
 }
 
 export interface IActionRemoveSuccess {
@@ -75,9 +85,15 @@ interface IProdutoUpdateState {
     data: any
 }
 
+interface IProdutosStatsState {
+    status: AsyncStateStatus
+    data: any
+}
+
 export interface ProdutosState {
     list: IProdutosState
     create: IProdutoCreateState
     remove: IProdutoRemoveState
     update: IProdutoUpdateState
+    stats: IProdutosStatsState
 }

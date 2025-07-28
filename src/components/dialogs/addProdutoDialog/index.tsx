@@ -73,6 +73,7 @@ class AddProdutoDialog extends Component<IProps> {
                                 qtd: selectedRow?.qtd || 0,
                                 price: selectedRow?.price || '',
                                 type: selectedRow?.type || '',
+                                totalPrice: selectedRow?.totalPrice || '',
                             }}
                             onSubmit={(values, { resetForm }) => {
                                 handleSubmit(values)
@@ -137,7 +138,13 @@ class AddProdutoDialog extends Component<IProps> {
                                                             variant='standard'
                                                             label="Quantidade"
                                                             value={values?.qtd || 0}
-                                                            onChange={(e: any) => { setFieldValue('qtd', e.target.value) }}
+                                                            onChange={(e: any) => { 
+                                                                setFieldValue('qtd', e.target.value)
+                                                                if(values?.price) {
+                                                                    let total = e.target.value * values?.price
+                                                                    setFieldValue('totalPrice', total)
+                                                                } 
+                                                            }}
                                                             onBlur={() => setFieldTouched('qtd', true, true)}
                                                         />
                                                         <FormErrorMessage name='qtd'></FormErrorMessage>
@@ -153,10 +160,40 @@ class AddProdutoDialog extends Component<IProps> {
                                                         <TextFieldCurrency
                                                             id={name}
                                                             variant='standard'
-                                                            label="Preço"
+                                                            label="Preço da Unidade"
                                                             error={!!errors.price && !!touched.price}
                                                             value={value}
-                                                            onChange={(newValue: number | undefined) => setFieldValue(name, newValue)}
+                                                            onChange={(newValue: number) => {
+                                                                setFieldValue(name, newValue)
+                                                                if(values?.qtd) {
+                                                                    console.log('entrou')
+                                                                    let total = values?.qtd * newValue
+                                                                    console.log(values?.qtd)
+                                                                    console.log(newValue)
+                                                                    console.log(total)
+                                                                    setFieldValue('totalPrice', total)
+                                                                } else {
+                                                                    setFieldValue('totalPrice', newValue)
+                                                                }
+                                                            }}
+                                                            onBlur={() => setFieldTouched(name, true, true)} />
+                                                        <FormErrorMessage name={name}></FormErrorMessage>
+                                                    </FormControl>
+                                                </Box>
+                                            )}
+                                        </Field>
+
+                                        <Field id='totalPrice' name='totalPrice' type="customField">
+                                            {({ field: { name, value } }) => (
+                                                <Box display="flex" justifyContent="center" width="100%">
+                                                    <FormControl fullWidth>
+                                                        <TextFieldCurrency
+                                                            id={name}
+                                                            variant='standard'
+                                                            label="Preço Total"
+                                                            error={!!errors.totalPrice && !!touched.totalPrice}
+                                                            value={value}
+                                                            InputProps={{ readOnly: true }}
                                                             onBlur={() => setFieldTouched(name, true, true)} />
                                                         <FormErrorMessage name={name}></FormErrorMessage>
                                                     </FormControl>

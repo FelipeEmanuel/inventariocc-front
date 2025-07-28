@@ -1,8 +1,9 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AsyncStateStatus } from "../root.types";
-import { IActionCreateSuccess, IActionProdutoRequest, IActionProdutoSuccess, IActionRemoveSuccess, IActionUpdateSuccess, ProdutosState } from "./types";
+import { IActionCreateSuccess, IActionProdutoRequest, IActionProdutoSuccess, IActionRemoveSuccess, IActionStatsSuccess, IActionUpdateSuccess, ProdutosState } from "./types";
 import { Produtos } from "../../application/domain/models/entity/produtos";
+import { Stats } from "../../application/domain/models/entity/stats";
 
 const initialState: ProdutosState = {
     list: {
@@ -29,6 +30,10 @@ const initialState: ProdutosState = {
     update: {
         status: AsyncStateStatus.INITIAL,
         data: new Produtos()
+    },
+    stats: {
+        status: AsyncStateStatus.INITIAL,
+        data: new Stats()
     }
 }
 
@@ -95,7 +100,19 @@ export const produtosSlice = createSlice({
         },
         removeFailure: (state: ProdutosState) => {
             state.remove.status = AsyncStateStatus.FAILURE
-        }
+        },
+
+        produtosStatsRequest: (state: ProdutosState) => {
+            state.stats.status = AsyncStateStatus.LOADING
+        },
+        produtosStatsSuccess: (state: ProdutosState, action: PayloadAction<IActionStatsSuccess>) => {
+            console.log(action.payload)
+            state.stats.status = AsyncStateStatus.SUCCESS
+            state.stats.data = action.payload.data
+        },
+        produtosStatsFailure: (state: ProdutosState) => {
+            state.stats.status = AsyncStateStatus.FAILURE
+        },
     }
 })
 

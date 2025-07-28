@@ -5,6 +5,7 @@ import { produtosActions } from '.'
 import { Produtos } from '../../application/domain/models/entity/produtos'
 import { IActionCreateSuccess, IActionRemoveRequest, IActionUpdateSuccess, ProdutosTypes } from './types'
 import produtosService from '../../services/produtos'
+import { Stats } from '../../application/domain/models/entity/stats'
 
 export function* getProdutos(action: IActionType<{ paginator: IPaginator }>) {
     const { produtosSuccess, produtosFailure } = produtosActions
@@ -18,9 +19,19 @@ export function* getProdutos(action: IActionType<{ paginator: IPaginator }>) {
     }
 }
 
+export function* getStats() {
+    const { produtosStatsSuccess, produtosStatsFailure } = produtosActions
+    try {
+        const data: Stats =
+            yield apply(produtosService, produtosService.getStats, [])
+        yield put(produtosStatsSuccess({data}))
+    } catch (error) {
+        yield put(produtosStatsFailure())
+    }
+}
+
 export function* create(action: IActionType<IActionCreateSuccess>) {
     const { createSuccess, createFailure } = produtosActions
-    //const { openSnackBar } = SnackbarActions
 
     try {
         const { data } = action.payload
@@ -73,7 +84,8 @@ const produtosSaga = function* () {
         takeLatest(ProdutosTypes.PRODUTOS_REQUEST, getProdutos),
         takeLatest(ProdutosTypes.CREATE_REQUEST, create),
         takeLatest(ProdutosTypes.UPDATE_REQUEST, update),
-        takeLatest(ProdutosTypes.REMOVE_REQUEST, remove)
+        takeLatest(ProdutosTypes.REMOVE_REQUEST, remove),
+        takeLatest(ProdutosTypes.PRODUTOS_STATS_REQUEST, getStats)
     ])
 }
 

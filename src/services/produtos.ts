@@ -2,6 +2,7 @@ import axiosInstance from './axios'
 import { AxiosResponse } from 'axios'
 import { IAxiosResponse, IPaginator, ISearch } from '../store/root.types'
 import { Produtos } from '../application/domain/models/entity/produtos'
+import { Stats } from '../application/domain/models/entity/stats'
 
 
 export class ProdutosService {
@@ -57,7 +58,6 @@ export class ProdutosService {
     }
 
     public async update(item: Produtos): Promise<Produtos> {
-        console.log(item.toJSON())
         return await axiosInstance
             .put(`${this.apiVersion}/produtos/${item.id}`, item.toJSON())
             .then((response: AxiosResponse<any>) =>
@@ -68,6 +68,14 @@ export class ProdutosService {
     public remove(parecerId: string): Promise<void> {
         return axiosInstance
             .delete(`${this.apiVersion}/produtos/${parecerId}`)
+    }
+
+    public getStats(): Promise<IAxiosResponse<Stats>> {
+        return axiosInstance
+            .get(`${this.apiVersion}/produtos/stats`)
+            .then((response: AxiosResponse<any>) => {
+                return response.data
+            })
     }
 
 }
